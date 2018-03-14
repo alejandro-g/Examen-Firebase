@@ -1,0 +1,98 @@
+<ion-header>
+  <ion-navbar>
+  <!--ion-buttons end *ngIf="afAuth.authState | async">
+          <button color="primary" ion-button icon-only (click)="addSong()">
+            <ion-icon name="add-circle"></ion-icon>
+          </button>
+        </ion-buttons-->
+        
+    <ion-title>
+      <ion-item class="item item-trns text-center">
+          Message Board
+        <ion-avatar item-end *ngIf="afAuth.authState | async">
+          <img src={{currentUser.photoURL}}>
+        </ion-avatar>
+      </ion-item>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    
+    <div *ngIf="afAuth.authState | async as user; else showLogin">
+        <button ion-button color="primary" full (click)="logout()">Logout</button>
+
+        <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+        <ion-list>
+          <ion-item *ngFor="let user of userList">
+            {{ user.displayName }}
+          </ion-item>
+        </ion-list>
+
+        <ion-list>
+          <ion-item>                  
+            <ion-card *ngFor="let user of users | async">
+              <label>{{user.displayName}} has logged in!</label>
+                <ion-avatar item-end *ngIf="afAuth.authState | async">
+                <img src={{user.photoURL}}></ion-avatar>
+            </ion-card>
+          </ion-item>
+          <ion-row>
+            <ion-col>
+                <ion-list radio-group col-sm>
+                    <ion-item>
+                      <ion-label>Privado</ion-label>
+                      <ion-radio (click) = "updateMessagesList('privado')"></ion-radio>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Mis amigos</ion-label>
+                      <ion-radio (click) = "updateMessagesList('misAmigos')"></ion-radio>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label>Publico</ion-label>
+                      <ion-radio (click) = "updateMessagesList('publico')" checked></ion-radio>
+                    </ion-item>
+                  </ion-list>
+            </ion-col>
+            <ion-col></ion-col>
+            <ion-col></ion-col>
+            <ion-col></ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col>
+              <ion-card *ngFor="let message of messages | async">
+                  
+                <label (click)="showOptions(message.id, message.title, message.numLikes, message.author)">{{message.author.name}} says: {{message.title}}</label>
+                  <br><br>
+
+                  <button ion-button icon-left clear small (click) ="presentFaveAlert(message.id, message.title, message.numLikes, message.order)">
+                    <ion-icon name="thumbs-up"></ion-icon>
+                    <div>Likes ({{message.numLikes}})</div>
+                  </button>
+
+                  <button ion-button icon-left clear small (click) = "presentDislikeAlert(message.id, message.title, message.numDislikes, message.order)">
+                    <ion-icon name="thumbs-down"></ion-icon>
+                    <div>Dislikes ({{message.numDislikes}})</div>
+                  </button>
+
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-list>
+        <ion-fab right bottom>
+          <button ion-fab  (click)="addMessage()">
+            <ion-icon name="add" ></ion-icon>
+          </button>
+        </ion-fab>
+
+      </div>
+      <ng-template #showLogin>
+        <p>Please login.</p>
+        <button ion-button color="danger"  full (click)="login()" icon-right>
+          <ion-icon name="logo-googleplus"></ion-icon>
+          Login with Google
+        </button>
+      </ng-template>
+
+</ion-content>
